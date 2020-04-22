@@ -9,7 +9,7 @@ const (
 	lenKey  = 2
 )
 
-// Random generate string
+// Generate random string len 2 letters
 func GetRandomString() string {
 	var bytes = make([]byte, lenKey)
 	rand.Read(bytes)

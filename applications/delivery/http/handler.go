@@ -12,9 +12,13 @@ import (
 	"github.com/spf13/viper"
 )
 
+// Applications which available to order
 var AvailableApplications []*models.Application
+
+// All showed applications
 var ShowedApplications []*models.Application
 
+// Get random applications from applications pull
 func GetApplication(c *gin.Context) {
 	rand.Seed(time.Now().UnixNano())
 	randIndex := rand.Intn(viper.GetInt("applications_limit"))
@@ -23,10 +27,12 @@ func GetApplication(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "message": application.Key})
 }
 
+// Get showed applications
 func GetAllApplications(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "message": ShowedApplications})
 }
 
+// Generate applications pull
 func GenApplications(limit int) {
 
 	for i := 0; i < limit; i++ {
@@ -40,12 +46,13 @@ func GenApplications(limit int) {
 	ticker := time.NewTicker(time.Millisecond * 200)
 	go func() {
 		for range ticker.C {
-			refreshApplications(AvailableApplications)
+			RefreshApplications(AvailableApplications)
 		}
 	}()
 }
 
-func refreshApplications(apps []*models.Application) {
+// Remove one random applications and create one new
+func RefreshApplications(apps []*models.Application) {
 	rand.Seed(time.Now().UnixNano())
 	randIndex := rand.Intn(viper.GetInt("applications_limit"))
 	var mux sync.Mutex

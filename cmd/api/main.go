@@ -17,7 +17,7 @@ func main() {
 		log.Fatal("%s", err.Error())
 	}
 
-	//	generate applications
+	// generate applications
 	appl.GenApplications(viper.GetInt("applications_limit"))
 
 	// start server

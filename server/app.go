@@ -12,6 +12,7 @@ import (
 	"github.com/labstack/gommon/log"
 )
 
+// Run server
 func Run(port string) error {
 	router := gin.Default()
 	router.Use(
