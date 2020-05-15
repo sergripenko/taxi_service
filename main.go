@@ -6,8 +6,6 @@ import (
 
 	"github.com/labstack/gommon/log"
 
-	appl "taxi_service/applications/delivery/http"
-
 	"github.com/spf13/viper"
 )
 
@@ -16,12 +14,9 @@ func main() {
 	if err := config.Init(); err != nil {
 		log.Fatal("%s", err.Error())
 	}
-
-	// generate applications
-	appl.GenApplications(viper.GetInt("applications_limit"))
-
+	app := server.NewApp()
 	// start server
-	if err := server.Run(viper.GetString("port")); err != nil {
+	if err := app.Run(viper.GetString("port")); err != nil {
 		log.Fatal(err)
 	}
 }
