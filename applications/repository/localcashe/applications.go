@@ -38,51 +38,51 @@ func NewApplicationsLocalStorage(limit int) *ApplicationsLocalStorage {
 	return appStorage
 }
 
-func (as *ApplicationsLocalStorage) GetApplication(ctx context.Context) *models.Application {
+func (a *ApplicationsLocalStorage) GetApplication(ctx context.Context) *models.Application {
 	rand.Seed(time.Now().UnixNano())
-	as.mutex.Lock()
-	randIndex := rand.Intn(len(as.availableApplications))
-	application := as.availableApplications[randIndex]
-	as.mutex.Unlock()
-	as.addShowedApplication(application)
+	a.mutex.Lock()
+	randIndex := rand.Intn(len(a.availableApplications))
+	application := a.availableApplications[randIndex]
+	a.mutex.Unlock()
+	a.addShowedApplication(application)
 	return application
 }
 
-func (as *ApplicationsLocalStorage) GetAllApplications(ctx context.Context) []*models.Application {
-	return as.showedApplications
+func (a *ApplicationsLocalStorage) GetAllApplications(ctx context.Context) []*models.Application {
+	return a.showedApplications
 }
 
 // Remove one random applications and create one new
-func (as *ApplicationsLocalStorage) refreshApplications() {
+func (a *ApplicationsLocalStorage) refreshApplications() {
 	rand.Seed(time.Now().UnixNano())
-	randIndex := rand.Intn(len(as.availableApplications))
-	as.mutex.Lock()
-	defer as.mutex.Unlock()
+	randIndex := rand.Intn(len(a.availableApplications))
+	a.mutex.Lock()
+	defer a.mutex.Unlock()
 	// Copy last element to index i.
-	as.availableApplications[randIndex] = as.availableApplications[len(as.availableApplications)-1]
+	a.availableApplications[randIndex] = a.availableApplications[len(a.availableApplications)-1]
 	// Erase last element (write zero value).
-	as.availableApplications[len(as.availableApplications)-1] = nil
+	a.availableApplications[len(a.availableApplications)-1] = nil
 	// Truncate slice.
-	as.availableApplications = as.availableApplications[:len(as.availableApplications)-1]
+	a.availableApplications = a.availableApplications[:len(a.availableApplications)-1]
 
 	newApplication := &models.Application{
 		Key:   services.GetRandomString(),
 		Count: 0,
 	}
-	as.availableApplications = append(as.availableApplications, newApplication)
+	a.availableApplications = append(a.availableApplications, newApplication)
 }
 
-func (as *ApplicationsLocalStorage) addShowedApplication(application *models.Application) {
+func (a *ApplicationsLocalStorage) addShowedApplication(application *models.Application) {
 	//for first application
-	as.mutex.Lock()
-	defer as.mutex.Unlock()
+	a.mutex.Lock()
+	defer a.mutex.Unlock()
 
-	if len(as.showedApplications) == 0 {
+	if len(a.showedApplications) == 0 {
 		application.Count = 1
-		as.showedApplications = append(as.showedApplications, application)
+		a.showedApplications = append(a.showedApplications, application)
 
 	} else {
-		for _, app := range as.showedApplications {
+		for _, app := range a.showedApplications {
 
 			if application.Key == app.Key {
 				var mux sync.Mutex
@@ -93,6 +93,6 @@ func (as *ApplicationsLocalStorage) addShowedApplication(application *models.App
 			}
 		}
 		application.Count = 1
-		as.showedApplications = append(as.showedApplications, application)
+		a.showedApplications = append(a.showedApplications, application)
 	}
 }
